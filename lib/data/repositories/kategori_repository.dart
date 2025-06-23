@@ -1,4 +1,3 @@
-// lib/data/repositories/kategori_repository.dart
 import '../database/app_database.dart';
 import '../models/kategori_model.dart';
 
