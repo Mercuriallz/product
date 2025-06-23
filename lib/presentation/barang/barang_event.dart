@@ -1,4 +1,3 @@
-// lib/bloc/barang/barang_event.dart
 import 'package:equatable/equatable.dart';
 import '../../data/models/barang_model.dart';
 
