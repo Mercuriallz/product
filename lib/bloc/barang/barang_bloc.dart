@@ -4,8 +4,8 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../data/repositories/barang_repository.dart';
-import '../barang/barang_event.dart';
-import '../barang/barang_state.dart';
+import 'barang_event.dart';
+import 'barang_state.dart';
 
 class BarangBloc extends Bloc<BarangEvent, BarangState> {
   final BarangRepository barangRepository;
