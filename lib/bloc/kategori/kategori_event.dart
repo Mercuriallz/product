@@ -1,4 +1,3 @@
-// lib/bloc/kategori/kategori_event.dart
 import 'package:equatable/equatable.dart';
 import '../../data/models/kategori_model.dart';
 
