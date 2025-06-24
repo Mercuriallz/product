@@ -3,12 +3,12 @@ import 'package:drift/drift.dart';
 import '../database/app_database.dart';
 import '../models/kategori_model.dart';
 class KategoriRepository {
-  final AppDatabase _database;
+  final AppDatabase database;
 
-  KategoriRepository(this._database);
+  KategoriRepository(this.database);
 
   Future<List<KategoriModel>> getAllKategori() async {
-    final result = await _database.select(_database.kategori).get();
+    final result = await database.select(database.kategori).get();
     return result.map((row) => KategoriModel(
       id: row.id,
       namaKategori: row.namaKategori,
@@ -16,7 +16,7 @@ class KategoriRepository {
   }
 
   Future<void> insertKategori(KategoriModel kategori) async {
-    await _database.into(_database.kategori).insert(
+    await database.into(database.kategori).insert(
       KategoriCompanion.insert(
         namaKategori: kategori.namaKategori,
       ),
@@ -24,7 +24,7 @@ class KategoriRepository {
   }
 
   Future<void> updateKategori(KategoriModel kategori) async {
-    await (_database.update(_database.kategori)
+    await (database.update(database.kategori)
           ..where((t) => t.id.equals(kategori.id)))
         .write(
           KategoriCompanion(
@@ -34,6 +34,6 @@ class KategoriRepository {
   }
 
   Future<void> deleteKategori(int id) async {
-    await (_database.delete(_database.kategori)..where((t) => t.id.equals(id))).go();
+    await (database.delete(database.kategori)..where((t) => t.id.equals(id))).go();
   }
 }

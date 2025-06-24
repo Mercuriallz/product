@@ -4,12 +4,12 @@ import '../models/barang_model.dart';
 
 
 class BarangRepository {
-  final AppDatabase _database;
+  final AppDatabase database;
 
-  BarangRepository(this._database);
+  BarangRepository(this.database);
 
   Future<List<BarangModel>> getAllBarang() async {
-    final query = _database.select(_database.barang)
+    final query = database.select(database.barang)
       ..orderBy([(t) => OrderingTerm(expression: t.namaBarang)]);
     final result = await query.get();
     return result.map((row) => BarangModel(
@@ -23,7 +23,7 @@ class BarangRepository {
   }
 
   Future<void> insertBarang(BarangModel barang) async {
-    await _database.into(_database.barang).insert(
+    await database.into(database.barang).insert(
       BarangCompanion.insert(
         namaBarang: barang.namaBarang,
         kategoriId: barang.kategoriId,
@@ -35,7 +35,7 @@ class BarangRepository {
   }
 
   Future<void> updateBarang(BarangModel barang) async {
-    await (_database.update(_database.barang)
+    await (database.update(database.barang)
           ..where((t) => t.id.equals(barang.id!)))
         .write(
           BarangCompanion(
@@ -49,10 +49,10 @@ class BarangRepository {
   }
 
   Future<void> deleteBarang(int id) async {
-    await (_database.delete(_database.barang)..where((t) => t.id.equals(id))).go();
+    await (database.delete(database.barang)..where((t) => t.id.equals(id))).go();
   }
 
   Future<void> deleteMultipleBarang(List<int> ids) async {
-    await (_database.delete(_database.barang)..where((t) => t.id.isIn(ids))).go();
+    await (database.delete(database.barang)..where((t) => t.id.isIn(ids))).go();
   }
 }

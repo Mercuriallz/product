@@ -8,7 +8,6 @@ import '../../bloc/barang/barang_bloc.dart';
 import '../../bloc/barang/barang_event.dart';
 import '../../bloc/barang/barang_state.dart';
 
-
 class BarangListPage extends StatefulWidget {
   const BarangListPage({super.key});
 
@@ -17,8 +16,8 @@ class BarangListPage extends StatefulWidget {
 }
 
 class _BarangListPageState extends State<BarangListPage> {
-  final List<int> _selectedItems = [];
-  bool _isSelecting = false;
+  final List<int> selectedItems = [];
+  bool isSelecting = false;
 
   @override
   void initState() {
@@ -30,8 +29,8 @@ class _BarangListPageState extends State<BarangListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: _isSelecting 
-            ? Text('${_selectedItems.length} Selected')
+        title: isSelecting
+            ? Text('${selectedItems.length} Selected')
             : const Text('Daftar Barang'),
         actions: _buildAppBarActions(),
       ),
@@ -42,8 +41,8 @@ class _BarangListPageState extends State<BarangListPage> {
               SnackBar(content: Text(state.message)),
             );
             setState(() {
-              _isSelecting = false;
-              _selectedItems.clear();
+              isSelecting = false;
+              selectedItems.clear();
             });
           } else if (state is BarangError) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -62,29 +61,42 @@ class _BarangListPageState extends State<BarangListPage> {
           return const Center(child: Text('No data available'));
         },
       ),
-      floatingActionButton: _isSelecting
+      bottomNavigationBar: isSelecting
           ? null
-          : FloatingActionButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const AddBarangPage(),
+          : Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const AddBarangPage(),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.add),
+                label: const Text("Tambah Barang"),
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size.fromHeight(50),
+                  backgroundColor: Theme.of(context).primaryColor,
+                  foregroundColor: Colors.white,
+                  textStyle: const TextStyle(fontSize: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                );
-              },
-              child: const Icon(Icons.add),
+                ),
+              ),
             ),
     );
   }
 
   List<Widget> _buildAppBarActions() {
-    if (_isSelecting) {
+    if (isSelecting) {
       return [
         IconButton(
           icon: const Icon(Icons.delete),
           onPressed: () {
-            if (_selectedItems.isNotEmpty) {
+            if (selectedItems.isNotEmpty) {
               _showDeleteConfirmationDialog();
             }
           },
@@ -93,8 +105,8 @@ class _BarangListPageState extends State<BarangListPage> {
           icon: const Icon(Icons.close),
           onPressed: () {
             setState(() {
-              _isSelecting = false;
-              _selectedItems.clear();
+              isSelecting = false;
+              selectedItems.clear();
             });
           },
         ),
@@ -103,8 +115,7 @@ class _BarangListPageState extends State<BarangListPage> {
       return [
         IconButton(
           icon: const Icon(Icons.search),
-          onPressed: () {
-            },
+          onPressed: () {},
         ),
       ];
     }
@@ -118,12 +129,12 @@ class _BarangListPageState extends State<BarangListPage> {
         return InkWell(
           onLongPress: () {
             setState(() {
-              _isSelecting = true;
+              isSelecting = true;
               _toggleItemSelection(barang.id!);
             });
           },
           onTap: () {
-            if (_isSelecting) {
+            if (isSelecting) {
               setState(() {
                 _toggleItemSelection(barang.id!);
               });
@@ -135,42 +146,75 @@ class _BarangListPageState extends State<BarangListPage> {
             }
           },
           child: Container(
-            margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+            margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: _selectedItems.contains(barang.id)
-                  ? Colors.blue
+              color: selectedItems.contains(barang.id)
+                  ? Colors.white
                   : Colors.white,
-              borderRadius: BorderRadius.circular(8),
-             
+              borderRadius: BorderRadius.circular(12),
             ),
-            child: ListTile(
-              leading: _isSelecting
-                  ? Checkbox(
-                      value: _selectedItems.contains(barang.id),
-                      onChanged: (value) {
-                        setState(() {
-                          _toggleItemSelection(barang.id!);
-                        });
-                      },
-                    )
-                  : Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: Colors.blue,
-                        borderRadius: BorderRadius.circular(8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      barang.namaBarang,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
                       ),
-                      child: const Icon(Icons.inventory_2, color: Colors.blue),
                     ),
-              title: Text(barang.namaBarang),
-              subtitle: Text('Stok: ${barang.stok}'),
-              trailing: Text(
-                _formatCurrency(barang.harga),
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
+                    Text(
+                      'Stok: ${barang.stok}',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ],
                 ),
-              ),
+                const SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Kategori: ${barang.kategoriId}',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey,
+                      ),
+                    ),
+                    Text(
+                      _formatCurrency(barang.harga),
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.green,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Kelompok: ${barang.kelompokBarang}',
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey,
+                  ),
+                ),
+                if (isSelecting)
+                  Checkbox(
+                    value: selectedItems.contains(barang.id),
+                    onChanged: (value) {
+                      setState(() {
+                        _toggleItemSelection(barang.id!);
+                      });
+                    },
+                  ),
+              ],
             ),
           ),
         );
@@ -179,15 +223,15 @@ class _BarangListPageState extends State<BarangListPage> {
   }
 
   void _toggleItemSelection(int id) {
-    if (_selectedItems.contains(id)) {
-      _selectedItems.remove(id);
-      if (_selectedItems.isEmpty) {
+    if (selectedItems.contains(id)) {
+      selectedItems.remove(id);
+      if (selectedItems.isEmpty) {
         setState(() {
-          _isSelecting = false;
+          isSelecting = false;
         });
       }
     } else {
-      _selectedItems.add(id);
+      selectedItems.add(id);
     }
   }
 
@@ -196,7 +240,7 @@ class _BarangListPageState extends State<BarangListPage> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Hapus Barang'),
-        content: Text('Yakin ingin menghapus ${_selectedItems.length} barang?'),
+        content: Text('Yakin ingin menghapus ${selectedItems.length} barang?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -204,7 +248,9 @@ class _BarangListPageState extends State<BarangListPage> {
           ),
           TextButton(
             onPressed: () {
-              context.read<BarangBloc>().add(DeleteMultipleBarang(_selectedItems));
+              context
+                  .read<BarangBloc>()
+                  .add(DeleteMultipleBarang(selectedItems));
               Navigator.pop(context);
             },
             child: const Text('Hapus', style: TextStyle(color: Colors.red)),
@@ -215,11 +261,11 @@ class _BarangListPageState extends State<BarangListPage> {
   }
 
   String _formatCurrency(int amount) {
-  final format = NumberFormat.currency(
-    locale: 'id',
-    symbol: 'Rp ',
-    decimalDigits: 0,
-  );
-  return format.format(amount);
-}
+    final format = NumberFormat.currency(
+      locale: 'id',
+      symbol: 'Rp ',
+      decimalDigits: 0,
+    );
+    return format.format(amount);
+  }
 }
